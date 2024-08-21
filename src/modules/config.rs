@@ -1,6 +1,16 @@
+use std::fmt::Debug;
+
 
 pub enum ConfigErrors {
     ImproperUsage = 64
+}
+
+impl Debug for ConfigErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::ImproperUsage => write!(f, "ImproperUsage"),
+        }
+    }
 }
 
 impl Into<i32> for ConfigErrors {
@@ -33,14 +43,26 @@ impl Config {
         }
     }
 
+    fn build(args: Vec<String>) -> Self {
+        if args.len() == 0 {
+            Self {
+                path: "".to_string(),
+            }
+        }
+        else {
+            Self {
+                path: args[0].clone(),
+            }
+        }
+    }
+
     pub fn new (args: impl Iterator<Item=String>) -> Result<Self, ConfigErrors> {
         let args_vec = Self::extract_args(args);
         let result = Self::validate_args(&args_vec);
+        let config = Self::build(args_vec);
         
         match result {
-            Ok(_) => Ok(Self {
-                path: String::from(""),
-            }),
+            Ok(_) => Ok(config),
             Err(v) => Err(v),
         }
     }
@@ -50,10 +72,21 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    const PATH_TO_COMPILE: &str = "path/to/compile.lox";
     #[test]
     fn should_parse_correctly() {
-        let fake_args = ["ignored/program/path", "path/to/compile.lox"];
+        let fake_args = ["ignored/program/path", PATH_TO_COMPILE];
         let config = Config::new(fake_args.into_iter().map(|x| x.to_string()));
+        let config_path = &config.as_ref().unwrap().path;
+        assert_eq!(config_path, PATH_TO_COMPILE);
+        assert!(config.is_ok())
+    }
+    #[test]
+    fn should_allow_repl_mode() {
+        let fake_args = ["ignored/program/path"];
+        let config = Config::new(fake_args.into_iter().map(|x| x.to_string()));
+        let config_path = &config.as_ref().unwrap().path;
+        assert_eq!(config_path, "");
         assert!(config.is_ok())
     }
     #[test]
