@@ -1,18 +1,20 @@
 mod modules;
 use std::process::exit;
 
-use modules::config;
+use modules::config::Config;
+use modules::runner::Runner;
 
 fn main() {
-    let configuration = config::Config::new(std::env::args());
+    let configuration = Config::new(std::env::args());
 
     match configuration {
         Ok(config) => {
-            println!("Path to parse {}", if "".eq(&config.path) {"repl".to_string()}  else { config.path.clone() }) ;
+            let runner = Runner::new(config, None);
+            runner.startup();
         },
         Err(err) => {
             println!("Error:");
-            config::Config::show_help();
+            Config::show_help();
             exit(err as i32);
         },
     }
