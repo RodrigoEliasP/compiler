@@ -9,7 +9,7 @@ fn main() {
 
     match configuration {
         Ok(config) => {
-            let runner = Runner::new(config, None);
+            let mut runner = Runner::new(config, None);
             runner.startup();
         },
         Err(err) => {
