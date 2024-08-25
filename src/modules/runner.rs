@@ -1,4 +1,5 @@
-use crate::modules::config::Config;
+use super::config::Config;
+use super::scanner::Scanner;
 use std::io::stdin;
 use std::fs::read_to_string;
 
@@ -76,11 +77,11 @@ impl<'a> Runner<'a> {
     }
 
     fn run (&self, script: String) {
-        println!("{}", script);
-    }
+        let mut scanner = Scanner::new(script);
+        let token_list = scanner.scan_tokens();
 
-    
-    
+        println!("{:?}", token_list);
+    }
 }
 
 #[cfg(test)]
