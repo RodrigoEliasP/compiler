@@ -67,7 +67,38 @@ impl Scanner {
       Token::new(token, text, literal, self.line)
     );
   }
+  
+}
 
-  
-  
+#[cfg(test)]
+mod tests {
+  use std::fs::read_to_string;
+
+  use super::*;
+  #[test]
+  fn should_scan_string_correctly() {
+    let testing_file_contents = read_to_string("./lox_scripts/lexing_test.txt").unwrap();
+    let mut scanner = Scanner::new(testing_file_contents);
+    scanner.scan_tokens();
+
+    let tokens = scanner.tokens;
+
+    let first_token = tokens[0].clone();
+    assert_eq!(first_token.kind, TokenKind::LeftBrace);
+    assert_eq!(first_token.line, 1);
+    assert_eq!(first_token.lexeme, "{");
+    assert!(first_token.literal.is_none());
+
+    let second_token = tokens[1].clone();
+    assert_eq!(second_token.kind, TokenKind::RightBrace);
+    assert_eq!(second_token.line, 1);
+    assert_eq!(second_token.lexeme, "}");
+    assert!(second_token.literal.is_none());
+
+    let third_token = tokens[2].clone();
+    assert_eq!(third_token.kind, TokenKind::Plus);
+    assert_eq!(third_token.line, 1/* like break not implemented yet */);
+    assert_eq!(third_token.lexeme, "+");
+    assert!(third_token.literal.is_none());
+  }
 }

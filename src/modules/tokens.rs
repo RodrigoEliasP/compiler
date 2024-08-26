@@ -1,5 +1,5 @@
 use std::fmt::Display;
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TokenKind {
   // Single-character tokens.
   LeftParen, RightParen, LeftBrace, RightBrace,
@@ -64,4 +64,13 @@ impl ToString for Token {
       };
       format!("{} {} {}", &self.kind, &self.lexeme, literal)
     }
+}
+#[cfg(test)]
+mod tests {
+  use super::*;
+  #[test]
+  fn should_create_new_token_and_be_printable() {
+    let token = Token::new(TokenKind::LeftBrace, "{".to_owned(), None, 0);
+    assert_eq!("Token { kind: LeftBrace, literal: None, lexeme: \"{\", line: 0 }", format!("{:?}", token));
+  }
 }
