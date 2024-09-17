@@ -22,6 +22,7 @@ fn read_input(buffer: &mut String) {
 
 pub struct Runner<'a> {
     pub mode: InterpreterModes,
+    had_error: bool,
     config: Config,
     reader: Box<dyn for<'b> FnMut(&'b mut String) + 'a>
 }
@@ -33,6 +34,7 @@ impl<'a> Runner<'a> {
         if has_no_path {
             Runner {
                 mode: InterpreterModes::REPL,
+                had_error: false,
                 config,
                 reader: match reader {
                     Some(function) => function,
@@ -42,10 +44,19 @@ impl<'a> Runner<'a> {
         }  else { 
             Runner {
                 mode: InterpreterModes::FILE,
+                had_error: false,
                 config,
                 reader: Box::from(read_input),
             }
         }
+    }
+
+    fn report(line: usize, place: String) {
+
+    }
+
+    pub fn error(line: usize, message: String) {
+
     }
 
     pub fn startup(&mut self) {
@@ -61,6 +72,9 @@ impl<'a> Runner<'a> {
         let contents = read_to_string(path);
         let script = contents.expect(&format!("Error while opening file in {path}").to_string());
         self.run(script)
+        if self.had_error {
+
+        }
     }
     fn run_repl(&mut self) {
         loop {
